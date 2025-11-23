@@ -8,3 +8,15 @@ wheels/
 
 # Virtual environments
 .venv
+
+# my own config
+*.pyd
+*.log
+*.tmp
+
+# database
+*.db
+*.csv
+
+# IDE
+.vscode/
