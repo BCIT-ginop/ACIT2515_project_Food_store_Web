@@ -6,7 +6,7 @@ from sqlalchemy import (
     Float,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from .database import Base
+from .db import Base
 from typing import List
 
 

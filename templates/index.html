@@ -1,0 +1,19 @@
+{% extends "base.html" %} {% block content %}
+<h1>Our Products</h1>
+
+<div class="product-grid">
+  {% for product in products %}
+  <div class="product-card">
+    <h3>{{ product.name }}</h3>
+    <p class="category">{{ product.category.name }}</p>
+    <p class="price">${{ product.price }}</p>
+
+    {% if product.available > 0 %}
+    <p class="stock">In Stock: {{ product.available }}</p>
+    {% else %}
+    <p class="stock out">OUT OF STOCK</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

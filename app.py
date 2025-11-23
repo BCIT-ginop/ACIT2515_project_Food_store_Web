@@ -1,29 +1,29 @@
+from pathlib import Path
 from flask import Flask, render_template
 from sqlalchemy import select
-from store.database import Session
-from store.models import Product, Category
+from store.db import db
+from store.models import Product, Customer
 
 app = Flask(__name__)
+
+app.instance_path = Path(".").resolve()
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///store.db"
+
+db.init_app(app)
 
 
 @app.route("/")
 def home():
-    with Session() as session:
-        stmt = select(Product)
-        products = session.scalars(stmt).all()
+    stmt = select(Product)
+    products = db.session.scalars(stmt).all()
+    return render_template("index.html", products=products)
 
-        html_output = "<h1>Welcome to the Food Store</h1>"
-        html_output = "<ul>"
 
-        for product in products:
-            stock_msg = f"(Stock: {product.available})"
-            if product.available == 0:
-                stock_msg = "<strong>(OUT OF STOCK)</strong>"
-
-            html_output += f"<li>{product.name} - ${product.price} {stock_msg}</li>"
-
-        html_output += "<ul>"
-        return html_output
+@app.route("/customers")
+def customer():
+    stmt = select(Customer)
+    customers = db.session.scalars(stmt).all()
+    return render_template("customers.html", customers=customers)
 
 
 if __name__ == "__main__":
