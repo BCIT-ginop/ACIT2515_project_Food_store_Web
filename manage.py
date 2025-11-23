@@ -4,6 +4,10 @@ from app import app
 from store.db import db
 from store.models import Customer, Product, Category
 
+import random
+from datetime import datetime, timedelta
+from store.models import Order, OrderItem
+
 
 def create_tables():
     db.create_all()
@@ -55,6 +59,33 @@ def seed_data():
     db.session.commit()
 
 
+def generate_random_orders():
+    for _ in range(10):
+        random_customer = db.session.execute(
+            db.select(Customer).order_by(db.func.random())
+        ).scalar()
+
+        order = Order(
+            customer=random_customer,
+            order_date=datetime.now()
+            - timedelta(days=random.randint(1, 30), hours=random.randint(0, 23)),
+        )
+        db.session.add(order)
+
+        num_products = random.randint(2, 5)
+        random_products = db.session.execute(
+            db.select(Product).order_by(db.func.random()).limit(num_products)
+        ).scalars()
+
+        for product in random_products:
+            order_item = OrderItem(
+                order=order, product=product, quantity=random.randint(1, 5)
+            )
+            db.session.add(order_item)
+
+    db.session.commit()
+
+
 def main():
     print("Hello from store!")
 
@@ -71,6 +102,8 @@ def main():
             drop_tables()
         elif command == "seed":
             seed_data()
+        elif command == "generate":
+            generate_random_orders()
         elif command == "reset":
             drop_tables()
             create_tables()
