@@ -1,13 +1,18 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block content %}
 
-{% block content %}
 <h1>Customers</h1>
+
 <div class="d-flex flex-wrap">
-    {% for customer in data %}
-    <div class="m-2 p-3 border border-black text-center">
-        <h4>{{ customer.name }}</h4>
-        <h6>{{ customer.phone }}</h6>
-    </div>
-    {% endfor %}
+  {% for customer in data %}
+  <div class="m-2 p-3 border border-black text-center">
+    <h4>
+      <a href="{{ url_for('customer_detail', id=customer.id) }}">
+        {{ customer.name }}
+      </a>
+    </h4>
+    <h6>{{ customer.phone }}</h6>
+  </div>
+  {% endfor %}
 </div>
+
 {% endblock %}
