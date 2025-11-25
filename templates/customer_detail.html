@@ -4,17 +4,42 @@
   <h2>{{ customer.name }}</h2>
   <p><strong>Phone:</strong> {{ customer.phone }}</p>
 
-  <h3>Order History</h3>
-  {% if customer.orders %}
+  <h3>Pending Orders</h3>
+  {% set pending_orders = customer.orders | selectattr('completed', 'none') |
+  list %} {% if pending_orders %}
   <ul>
-    {% for order in customer.orders %}
-    <li>Order #{{ order.id }} - {{ order.order_date.strftime('%Y-%m-%d') }}</li>
+    {% for order in pending_orders %}
+    <li>
+      <a href="{{ url_for('order_detail', id=order.id) }}"
+        >Order #{{ order.id }}</a
+      >
+      - {{ order.order_date.strftime('%Y-%m-%d') }} - ${{ order.estimate() |
+      round(2) }} (est.)
+    </li>
     {% endfor %}
   </ul>
   {% else %}
-  <p>No orders yet.</p>
+  <p>No pending orders.</p>
+  {% endif %}
+
+  <h3>Completed Orders</h3>
+  {% set completed_orders = customer.orders | rejectattr('completed', 'none') |
+  list %} {% if completed_orders %}
+  <ul>
+    {% for order in completed_orders %}
+    <li>
+      <a href="{{ url_for('order_detail', id=order.id) }}"
+        >Order #{{ order.id }}</a
+      >
+      - {{ order.completed.strftime('%Y-%m-%d') }} - ${{ order.amount }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No completed orders yet.</p>
   {% endif %}
 </div>
 
 <p><a href="{{ url_for('customers') }}">Back to All Customers</a></p>
+
 {% endblock %}
