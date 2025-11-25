@@ -1,0 +1,8 @@
+{% extends "base.html" %} {% block content %}
+<div style="text-align: center; margin-top: 50px">
+  <h1 style="color: #dc3545">Error</h1>
+  <p>{{ message }}</p>
+  <br />
+  <a href="{{ url_for('home') }}">Go to Home</a>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %} {% block content %}
+<h1>All Orders</h1>
+
+{% if orders %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Order ID</th>
+      <th>Customer</th>
+      <th>Date</th>
+      <th>Status</th>
+      <th>Amount</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in orders %}
+    <tr>
+      <td>
+        <a href="{{ url_for('order_detail', id=order.id) }}">#{{ order.id }}</a>
+      </td>
+      <td>
+        <a href="{{ url_for('customer_detail', id=order.customer.id) }}">
+          {{ order.customer.name }}
+        </a>
+      </td>
+      <td>{{ order.order_date.strftime('%Y-%m-%d %H:%M') }}</td>
+      <td>
+        {% if order.completed %}
+        <span style="color: green">✓ Completed</span>
+        {% else %}
+        <span style="color: orange">⏳ Pending</span>
+        {% endif %}
+      </td>
+      <td>
+        {% if order.completed %} ${{ order.amount }} {% else %} ${{
+        order.estimate() | round(2) }} (est.) {% endif %}
+      </td>
+      <td>
+        <a
+          href="{{ url_for('order_detail', id=order.id) }}"
+          class="btn btn-sm btn-primary"
+        >
+          View Details
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No orders yet.</p>
+{% endif %} {% endblock %}

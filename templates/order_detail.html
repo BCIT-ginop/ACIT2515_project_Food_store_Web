@@ -1,0 +1,86 @@
+{% extends "base.html" %} {% block content %}
+<h1>Order #{{ order.id }}</h1>
+
+<div class="order-info">
+  <p>
+    <strong>Customer:</strong>
+    <a href="{{ url_for('customer_detail', id=order.customer.id) }}">
+      {{ order.customer.name }}
+    </a>
+  </p>
+  <p>
+    <strong>Order Date:</strong> {{ order.order_date.strftime('%Y-%m-%d %H:%M')
+    }}
+  </p>
+  <p>
+    <strong>Status:</strong>
+    {% if order.completed %}
+    <span style="color: green"
+      >✓ Completed on {{ order.completed.strftime('%Y-%m-%d %H:%M') }}</span
+    >
+    {% else %}
+    <span style="color: orange">⏳ Pending</span>
+    {% endif %}
+  </p>
+</div>
+
+<h3>Order Items</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Price</th>
+      <th>Quantity</th>
+      <th>Subtotal</th>
+      <th>Stock Available</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in order.order_items %}
+    <tr>
+      <td>{{ item.product.name }}</td>
+      <td>${{ item.product.price }}</td>
+      <td>{{ item.quantity }}</td>
+      <td>${{ (item.product.price * item.quantity) | round(2) }}</td>
+      <td>
+        {% if item.product.available >= item.quantity %}
+        <span style="color: green">{{ item.product.available }} ✓</span>
+        {% else %}
+        <span style="color: red"
+          >{{ item.product.available }} ⚠️ Not enough!</span
+        >
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="3" style="text-align: right"><strong>Total:</strong></td>
+      <td colspan="2">
+        <strong>
+          {% if order.completed %} ${{ order.amount }} {% else %} ${{
+          order.estimate() | round(2) }} (estimated) {% endif %}
+        </strong>
+      </td>
+    </tr>
+  </tfoot>
+</table>
+
+{% if not order.completed %}
+<div style="margin-top: 20px">
+  <form action="{{ url_for('complete_order', id=order.id) }}" method="POST">
+    <button type="submit" class="btn btn-success">Complete Order</button>
+  </form>
+  <p style="margin-top: 10px; font-size: 0.9em; color: #666">
+    Completing the order will deduct items from inventory and finalize the
+    purchase.
+  </p>
+</div>
+{% endif %}
+
+<p style="margin-top: 20px">
+  <a href="{{ url_for('orders') }}">← Back to All Orders</a>
+</p>
+
+{% endblock %}
