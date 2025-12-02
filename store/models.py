@@ -39,9 +39,9 @@ class Order(db.Model):
     __tablename__ = "order"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    order_date: Mapped[datetime.datetime] = mapped_column(
+    created: Mapped[datetime.datetime] = mapped_column(
         DateTime, nullable=False, default=db.func.now()
-    )
+    )  # changed from order_date
     completed: Mapped[Optional[datetime.datetime]] = mapped_column(
         DateTime, nullable=True, default=None
     )

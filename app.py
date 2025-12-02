@@ -38,7 +38,7 @@ def products():
 
 @app.route("/orders")
 def orders():
-    stmt = select(Order).order_by(Order.order_date.desc())
+    stmt = select(Order).order_by(Order.created.desc())  # changed from order_date
     orders = db.session.scalars(stmt).all()
     return render_template("orders.html", orders=orders)
 
@@ -80,6 +80,9 @@ def category_detail(name):
     stmt = select(Category).where(Category.name == name)
     category = db.session.scalar(stmt)
 
+    if not category:
+        return render_template("error.html", message="Category not found"), 404
+
     return render_template(
         "index.html", products=category.products, title=category.name
     )
@@ -88,6 +91,9 @@ def category_detail(name):
 @app.route("/customers/<int:id>")
 def customer_detail(id):
     customer = db.session.get(Customer, id)
+
+    if not customer:
+        return render_template("error.html", message="Customer not found"), 404
 
     return render_template("customer_detail.html", customer=customer)
 
@@ -163,6 +169,16 @@ def checkout():
     except ValueError as e:
         db.session.rollback()
         return render_template("error.html", message=f"Checkout failed: {e}"), 409
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("error.html", message="Page not found"), 404
+
+
+@app.errorhandler(500)
+def internal_error(e):
+    return render_template("error.html", message="Internal server error"), 500
 
 
 if __name__ == "__main__":

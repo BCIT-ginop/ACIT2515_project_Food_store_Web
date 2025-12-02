@@ -67,7 +67,7 @@ def generate_random_orders():
 
         order = Order(
             customer=random_customer,
-            order_date=datetime.now()
+            created=datetime.now()
             - timedelta(days=random.randint(1, 30), hours=random.randint(0, 23)),
         )
         db.session.add(order)
